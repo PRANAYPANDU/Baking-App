@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.SimpleTimeZone;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,19 +42,18 @@ public class QueryUtils {
     ArrayList<Recipe> recipes=new ArrayList<>();
     try{
       JSONArray baseJson=new JSONArray(jsonResponse);
-      Log.d(TAG, String.valueOf(baseJson.length()));
       for(int i=0;i<baseJson.length();i++){
         JSONObject currentRecipe=baseJson.getJSONObject(i);
         String recipe_name=currentRecipe.getString("name");
-        Log.d(TAG,recipe_name);
         int id=currentRecipe.getInt("id");
         int servings=currentRecipe.getInt("servings");
         ArrayList<ArrayList<String>> ingredients = new ArrayList<>();
 
         JSONArray ing=currentRecipe.getJSONArray("ingredients");
+
         for(int j=0;j<ing.length();j++){
           ArrayList<String> item=new ArrayList<>();
-          JSONObject currentIngredient=ing.getJSONObject(i);
+          JSONObject currentIngredient=ing.getJSONObject(j);
           String quantity=currentIngredient.getString("quantity");
           String measure=currentIngredient.getString("measure");
           String ingredient=currentIngredient.getString("ingredient");
@@ -64,19 +64,23 @@ public class QueryUtils {
           ingredients.add(item);
 
         }
+
         ArrayList<ArrayList<String>> Steps = new ArrayList<>();
 
         JSONArray steps=currentRecipe.getJSONArray("steps");
+
         for(int j=0;j<steps.length();j++){
           ArrayList<String> step=new ArrayList<>();
-          JSONObject currentStep=steps.getJSONObject(i);
+          JSONObject currentStep=steps.getJSONObject(j);
           String shortDescription=currentStep.getString("shortDescription");
           String description=currentStep.getString("description");
           String videoUrl=currentStep.getString("videoURL");
 
           step.add(0,shortDescription);
+
           step.add(1,description);
           step.add(2,videoUrl);
+          Steps.add(step);
         }
         Recipe recipe=new Recipe(id,recipe_name,ingredients,Steps,servings);
         recipes.add(recipe);
